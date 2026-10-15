@@ -5,6 +5,7 @@ services:
     ports:
       - "8080:80"
     environment:
+      TZ: Asia/Jakarta
       DB_HOST: db
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
@@ -17,7 +18,9 @@ services:
 
   db:
     image: mariadb:10.4
+    command: ["--default-time-zone=+07:00"]
     environment:
+      TZ: Asia/Jakarta
       MYSQL_ROOT_PASSWORD: ${DB_PASS}
       MYSQL_DATABASE: ${DB_NAME}
     volumes:

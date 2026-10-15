@@ -9,6 +9,8 @@ RUN echo '<?php header("Location: /event_ticketing/public/index.php?controller=e
 
 RUN mkdir -p public/uploads && chown -R www-data:www-data public/uploads
 
+RUN echo "date.timezone=Asia/Jakarta" > /usr/local/etc/php/conf.d/timezone.ini
+
 EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
   CMD curl -fs http://localhost/event_ticketing/public/index.php || exit 1
