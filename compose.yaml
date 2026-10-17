@@ -1,0 +1,37 @@
+services:
+  app:
+    build: .
+    image: group05/tiketku:week6
+    ports:
+      - "8080:80"
+    environment:
+      TZ: Asia/Jakarta
+      DB_HOST: db
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads:/var/www/html/event_ticketing/public/uploads
+
+  db:
+    image: mariadb:10.4
+    command: ["--default-time-zone=+07:00"]
+    environment:
+      TZ: Asia/Jakarta
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./event_ticketing/tiketku.sql:/docker-entrypoint-initdb.d/tiketku.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  db-data:
+  uploads:
