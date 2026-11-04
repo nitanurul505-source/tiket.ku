@@ -9,10 +9,17 @@ class Database {
     public  $conn;
 
     public function __construct() {
-        $this->host     = getenv('DB_HOST') ?: '127.0.0.1';
-        $this->db_name  = getenv('DB_NAME') ?: 'tiketku';
-        $this->username = getenv('DB_USER') ?: 'root';
-        $this->password = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+        $local = is_file(__DIR__ . '/local.php') ? require __DIR__ . '/local.php' : [];
+        $this->host     = getenv('DB_HOST') ?: ($local['host'] ?? '127.0.0.1');
+        $this->db_name  = getenv('DB_NAME') ?: ($local['name'] ?? 'tiketku');
+        $this->username = getenv('DB_USER') ?: ($local['user'] ?? '');
+        $this->password = getenv('DB_PASS') ?: ($local['pass'] ?? '');
+
+        if ($this->username === '' || $this->password === '') {
+            error_log('Database credentials are not configured');
+            http_response_code(500);
+            exit('Service unavailable.');
+        }
     }
 
     public function getConnection() {
@@ -25,7 +32,9 @@ class Database {
             );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            echo "Connection error: " . $e->getMessage();
+            error_log($e->getMessage());
+            http_response_code(500);
+            exit('Service unavailable.');
         }
         return $this->conn;
     }

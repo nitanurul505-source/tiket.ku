@@ -183,10 +183,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `password`) VALUES
-(1, 'Budi Santoso', 'budi@example.com', '081234567890', 'budi123'),
-(2, 'Siti Aminah', 'siti@example.com', '089876543210', 'siti123'),
-(3, 'Rizky Pratama', 'rizky@example.com', '082345678901', 'rizky123'),
-(5, 'Administrator', 'admin@tiketku.com', '000000000000', 'admin123');
+(1, 'Budi Santoso', 'budi@example.com', '081234567890', '$2y$10$OImrH6m6/5iWbQUhmLpOCuHgLoQj5V0DPRNn/OyYwGX7CwOc//x7W'),
+(2, 'Siti Aminah', 'siti@example.com', '089876543210', '$2y$10$uV88rrrMSHrJgkyTPQT4s.PTQSHbmEn.35Yunpd0K8Kh1v3/jWC.K'),
+(3, 'Rizky Pratama', 'rizky@example.com', '082345678901', '$2y$10$0aXXmzzLQvzMAqVU20CC0.U1WfCRcmBBrf2XwlpN5YxjiyYj5xOZ6'),
+(5, 'Administrator', 'admin@tiketku.com', '000000000000', '$2y$10$QKsCuKkWvhEqJqfmWp4WcOLvpRh1FM1XS9hAi7HkNCFOvkYv5Rhpa');
 
 --
 -- Indexes for dumped tables
