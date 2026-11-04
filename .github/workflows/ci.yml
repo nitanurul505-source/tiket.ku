@@ -57,7 +57,7 @@ jobs:
       - name: Image scan, database
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: mariadb:10.4
+          image-ref: mariadb:10.11
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           exit-code: "1"
