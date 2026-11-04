@@ -1,5 +1,7 @@
 FROM php:8.3-apache
 
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+
 RUN docker-php-ext-install pdo pdo_mysql
 
 WORKDIR /var/www/html/event_ticketing
@@ -14,3 +16,4 @@ RUN echo "date.timezone=Asia/Jakarta" > /usr/local/etc/php/conf.d/timezone.ini
 EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
   CMD curl -fs http://localhost/event_ticketing/public/index.php || exit 1
+
