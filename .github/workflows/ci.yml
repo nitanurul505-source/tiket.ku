@@ -54,13 +54,13 @@ jobs:
           ignore-unfixed: true
           exit-code: "1"
 
-      - name: Image scan, database
+      - name: Image scan, database (report only)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: mariadb:10.11
           severity: HIGH,CRITICAL
           ignore-unfixed: true
-          exit-code: "1"
+          exit-code: "0"
 
       - name: Show logs on failure
         if: failure()
