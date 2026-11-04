@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP syntax check
+        run: find event_ticketing -name '*.php' -print0 | xargs -0 -n1 php -l
+
+  smoke-test:
+    needs: [secret-scan, lint]
+    runs-on: ubuntu-latest
+    env:
+      BASE: http://localhost:8080/event_ticketing/public/index.php
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .env from the example
+        run: cp .env.example .env
+
+      - name: Build and start the stack
+        run: docker compose up -d --build --wait
+
+      - name: Positive test, home page loads
+        run: curl -fsS "$BASE" | grep -q "All Events"
+
+      - name: Negative test, guest on admin page
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            "$BASE?controller=payment&action=index")
+          test "$code" = "302"
+
+      - name: Image scan, application
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: group05/tiketku:week6
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+
+      - name: Image scan, database
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: mariadb:10.4
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
