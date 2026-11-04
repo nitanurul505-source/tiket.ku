@@ -27,7 +27,7 @@ class User {
         $this->name     = htmlspecialchars(strip_tags($this->name));
         $this->email    = htmlspecialchars(strip_tags($this->email));
         $this->phone    = htmlspecialchars(strip_tags($this->phone));
-        $this->password = htmlspecialchars(strip_tags($this->password));
+        $this->password = password_hash($this->password, PASSWORD_DEFAULT);
 
         $stmt->bindParam(":name",     $this->name);
         $stmt->bindParam(":email",    $this->email);
@@ -72,7 +72,7 @@ class User {
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($row && $row['password'] === $password) {
+        if ($row && password_verify($password, $row['password'])) {
             return $row;
         }
         return false;

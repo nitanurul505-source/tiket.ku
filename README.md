@@ -75,11 +75,11 @@ from `event_ticketing/tiketku.sql`.
 | --- | --- | --- |
 | V-01 | `docker compose ps` | `app` is running (it shows `healthy` after about 30 seconds) and `db` is `healthy` |
 | V-02 | Open http://localhost:8080/ | The TiketKu home page loads with **All Events (4)** and no errors |
-| V-03 | Click **Login** and sign in with `budi@example.com` / `budi123` | Login succeeds, you are redirected to the event list and **Log out** appears in the navbar |
+| V-03 | Click Register, create a new account, then log in. | Login succeeds, you are redirected to the event list and **Log out** appears in the navbar |
 | V-04 | `docker compose restart` | The app starts again and V-02 still passes |
 
 Demo accounts come from `tiketku.sql` and are for local development only.
-Administrator demo account: `admin@tiketku.com` / `admin123`.
+
 
 ## 7. Logs and status
 
@@ -109,5 +109,5 @@ docker compose down -v     # also delete the database and upload volumes
 - **Warning about blank variables:** you forgot to create `.env` from `.env.example`.
 - Uploaded event posters are stored in the `uploads` volume and are deleted by
   `docker compose down -v`.
-- Known limitation: the demo data in `tiketku.sql` uses plain-text passwords.
+- Demo accounts in `tiketku.sql` use hashed passwords, which are not published here. Register a new account to test. This setup is meant for local development and handover, not for production.
   This setup is meant for local development and handover only, not production.

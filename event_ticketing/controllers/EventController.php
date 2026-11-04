@@ -146,24 +146,27 @@ class EventController {
 
     // ── Handle file upload ──────────────────────────────────
     private function handleUpload($file) {
-        $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-        $maxSize      = 5 * 1024 * 1024; // 5 MB
+        $maxSize = 5 * 1024 * 1024; // 5 MB
 
-        if (!in_array($file['type'], $allowedTypes)) {
-            return ['success' => false, 'error' => 'Format file tidak didukung. Gunakan JPG, PNG, atau WebP.'];
+        if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            return ['success' => false, 'error' => 'Upload gagal. Coba lagi.'];
         }
         if ($file['size'] > $maxSize) {
             return ['success' => false, 'error' => 'Ukuran file terlalu besar. Maksimal 5 MB.'];
         }
 
-        // Create a folder if one doesn't already exist
+        // Check the real file content on the server, not the type sent by the browser
+        $mime    = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+        $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+        if (!isset($allowed[$mime]) || @getimagesize($file['tmp_name']) === false) {
+            return ['success' => false, 'error' => 'Format file tidak didukung. Gunakan JPG, PNG, atau WebP.'];
+        }
+
         if (!is_dir($this->uploadDir)) {
             mkdir($this->uploadDir, 0755, true);
         }
 
-        // Unique filename
-        $ext      = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = 'event_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . strtolower($ext);
+        $filename = 'event_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $allowed[$mime];
         $destPath = $this->uploadDir . $filename;
 
         if (move_uploaded_file($file['tmp_name'], $destPath)) {

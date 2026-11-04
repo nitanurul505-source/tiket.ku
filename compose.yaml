@@ -17,7 +17,7 @@ services:
       - uploads:/var/www/html/event_ticketing/public/uploads
 
   db:
-    image: mariadb:10.4
+    image: mariadb:10.11
     command: ["--default-time-zone=+07:00"]
     environment:
       TZ: Asia/Jakarta
